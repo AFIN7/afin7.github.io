@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin // AFIN@dev:~</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #080b10;
+    --panel: #0f151d;
+    --panel-2: #0c1119;
+    --panel-border: #1c2733;
+    --glass: rgba(16,22,31,0.55);
+    --cyan: #2dd9ff;
+    --cyan-dim: #2dd9ff33;
+    --green: #3ddc84;
+    --amber: #ffb000;
+    --text: #cbd8e3;
+    --text-dim: #5c7086;
+    --heading: #eaf6ff;
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #0e1826 0%, transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, #10131c 0%, transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  a{ color: inherit; }
+
+  .wrap{ max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 26px; }
+  .logo{ font-family:'JetBrains Mono', monospace; font-weight:700; font-size:14px; color: var(--heading); display:flex; align-items:center; gap:8px; }
+  .logo .dot{ width:8px; height:8px; border-radius:50%; background: var(--green); box-shadow:0 0 8px var(--green); }
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:600;
+    padding: 9px 14px; border-radius:7px; text-decoration:none; border: none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; transition: all .15s ease;
+  }
+  .btn-primary{ background: var(--cyan); color: var(--bg); }
+  .btn-primary:hover{ box-shadow: 0 0 16px var(--cyan-dim); }
+  .btn-ghost{ border:1px solid var(--panel-border); color: var(--text); background:transparent; }
+  .btn-ghost:hover{ border-color: var(--cyan); color: var(--cyan); }
+  .btn-primary:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .glass{ border:1px solid var(--panel-border); background: var(--glass); backdrop-filter: blur(6px); border-radius: 12px; }
+
+  /* LOGIN SCREEN */
+  .login-wrap{ display:flex; align-items:center; justify-content:center; min-height: 80vh; }
+  .login-box{ width:100%; max-width: 360px; padding: 28px 26px; }
+  .login-title{ font-family:'JetBrains Mono', monospace; font-size:16px; color: var(--heading); margin-bottom:4px; }
+  .login-sub{ font-size:12.5px; color: var(--text-dim); margin-bottom:22px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-dim); margin-bottom:6px; }
+  .field input{
+    width:100%; padding:10px 12px; border-radius:7px; border:1px solid var(--panel-border);
+    background: var(--panel-2); color: var(--text); font-family:'Inter', sans-serif; font-size:13px;
+  }
+  .field input:focus{ outline:none; border-color: var(--cyan); }
+  .login-error{ font-size:11.5px; color:#ff6b6b; margin: -4px 0 12px; display:none; }
+  .login-box .btn-primary{ width:100%; justify-content:center; padding:11px; margin-top:6px; }
+
+  /* DASHBOARD */
+  #dashboard{ display:none; }
+  .stat-row{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; margin-bottom: 20px; }
+  @media (max-width:640px){ .stat-row{ grid-template-columns: 1fr; } }
+  .stat-card{ padding:16px 18px; }
+  .stat-label{ font-family:'JetBrains Mono', monospace; font-size:10.5px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+  .stat-value{ font-size:24px; font-weight:800; color: var(--heading); font-family:'JetBrains Mono', monospace; }
+
+  .table-card{ padding: 18px 18px 8px; overflow-x:auto; }
+  .table-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .table-head h2{ font-size:15px; margin:0; color: var(--heading); font-family:'JetBrains Mono', monospace; }
+  table{ width:100%; border-collapse: collapse; font-size:13px; min-width: 560px; }
+  th{ text-align:left; font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; padding: 10px 12px; border-bottom: 1px solid var(--panel-border); }
+  td{ padding: 10px 12px; border-bottom: 1px solid var(--panel-border); color: var(--text); }
+  tr:last-child td{ border-bottom:none; }
+  .empty-row td{ color: var(--text-dim); text-align:center; padding: 30px 12px; font-family:'JetBrains Mono', monospace; font-size:12px; }
+  .load-msg{ font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--text-dim); text-align:center; padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><span class="dot"></span>AFIN@admin:~</div>
+    <a class="btn btn-ghost" href="index.html">&larr; back to portfolio</a>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="loginScreen">
+    <div class="login-box glass">
+      <div class="login-title">Admin Login</div>
+      <div class="login-sub">Sign in to view resume download leads.</div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="laEmail">Email</label>
+          <input type="email" id="laEmail" required>
+        </div>
+        <div class="field">
+          <label for="laPassword">Password</label>
+          <input type="password" id="laPassword" required>
+        </div>
+        <div class="login-error" id="loginError">Invalid email or password.</div>
+        <button type="submit" class="btn btn-primary" id="loginSubmit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="stat-row">
+      <div class="glass stat-card">
+        <div class="stat-label">Total Downloads</div>
+        <div class="stat-value" id="statTotal">—</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="stat-label">Downloads Today</div>
+        <div class="stat-value" id="statToday">—</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="stat-label">Signed In As</div>
+        <div class="stat-value" id="statUser" style="font-size:14px;">—</div>
+      </div>
+    </div>
+
+    <div class="glass table-card">
+      <div class="table-head">
+        <h2>$ select * from resume_downloads</h2>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-ghost" id="exportBtn">&#8595; export CSV</button>
+          <button class="btn btn-ghost" id="logoutBtn">logout</button>
+        </div>
+      </div>
+      <div id="tableWrap">
+        <div class="load-msg">loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ============================================================
+     Use the SAME Supabase project URL + anon key as your index.html
+     ============================================================ */
+  const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  let supabaseClient = null;
+  if(SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL' && window.supabase){
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  const loginScreen = document.getElementById('loginScreen');
+  const dashboard = document.getElementById('dashboard');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const tableWrap = document.getElementById('tableWrap');
+
+  let lastRows = [];
+
+  function showDashboard(user){
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    document.getElementById('statUser').textContent = user.email;
+    loadDownloads();
+  }
+
+  function showLogin(){
+    dashboard.style.display = 'none';
+    loginScreen.style.display = 'flex';
+  }
+
+  async function checkSession(){
+    if(!supabaseClient){
+      tableWrap.innerHTML = '<div class="load-msg">Supabase isn\'t configured yet — add SUPABASE_URL and SUPABASE_ANON_KEY at the top of this file.</div>';
+      return;
+    }
+    const { data } = await supabaseClient.auth.getSession();
+    if(data.session){
+      showDashboard(data.session.user);
+    }
+  }
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!supabaseClient){
+      loginError.textContent = 'Supabase is not configured in this file yet.';
+      loginError.style.display = 'block';
+      return;
+    }
+    loginError.style.display = 'none';
+    loginSubmit.disabled = true;
+    loginSubmit.textContent = 'Signing in...';
+
+    const email = document.getElementById('laEmail').value.trim();
+    const password = document.getElementById('laPassword').value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    loginSubmit.disabled = false;
+    loginSubmit.textContent = 'Login';
+
+    if(error){
+      loginError.textContent = error.message;
+      loginError.style.display = 'block';
+      return;
+    }
+    showDashboard(data.user);
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    if(supabaseClient){ await supabaseClient.auth.signOut(); }
+    showLogin();
+  });
+
+  async function loadDownloads(){
+    tableWrap.innerHTML = '<div class="load-msg">loading...</div>';
+    const { data: rows, error } = await supabaseClient
+      .from('resume_downloads')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if(error){
+      tableWrap.innerHTML = `<div class="load-msg">Could not load data: ${error.message}</div>`;
+      return;
+    }
+
+    lastRows = rows || [];
+    document.getElementById('statTotal').textContent = lastRows.length;
+
+    const todayStr = new Date().toDateString();
+    const todayCount = lastRows.filter(r => new Date(r.created_at).toDateString() === todayStr).length;
+    document.getElementById('statToday').textContent = todayCount;
+
+    if(!lastRows.length){
+      tableWrap.innerHTML = `
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Download Time</th></tr></thead>
+          <tbody><tr class="empty-row"><td colspan="4">No downloads yet — once someone submits the resume form, they'll show up here.</td></tr></tbody>
+        </table>`;
+      return;
+    }
+
+    const rowsHtml = lastRows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.name || '')}</td>
+        <td>${escapeHtml(r.email || '')}</td>
+        <td>${escapeHtml(r.company || '—')}</td>
+        <td>${new Date(r.created_at).toLocaleString()}</td>
+      </tr>
+    `).join('');
+
+    tableWrap.innerHTML = `
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Download Time</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>`;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  exportBtn.addEventListener('click', () => {
+    if(!lastRows.length){ alert('No data to export yet.'); return; }
+    const header = ['Name','Email','Company','Download Time'];
+    const csvRows = lastRows.map(r => [
+      r.name || '',
+      r.email || '',
+      r.company || '',
+      new Date(r.created_at).toLocaleString()
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+    const csv = [header.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resume_downloads_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  checkSession();
+</script>
+
+</body>
+</html>
