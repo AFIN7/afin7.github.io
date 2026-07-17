@@ -6,8 +6,8 @@
 <title>Muhammed Afin // full_stack_dev</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
   :root{
     --bg: #080b10;
@@ -535,7 +535,7 @@
       <div class="stats-card reveal">
         <div class="stats-label">contribution activity</div>
         <div class="chart-scroll">
-          <img src="https://github-readme-activity-graph.vercel.app/graph?username=AFIN7&theme=react-dark&hide_border=true&bg_color=10161F&color=CBD8E3&line=2DD9FF&point=FFB000" alt="AFIN7 GitHub contribution activity graph" loading="lazy" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='block';">
+          <img id="activityGraphImg" src="https://github-readme-activity-graph.vercel.app/graph?username=AFIN7&theme=react-dark&hide_border=true&bg_color=10161F&color=CBD8E3&line=2DD9FF&point=FFB000" alt="AFIN7 GitHub contribution activity graph" loading="lazy" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='block';">
         </div>
         <div class="stats-fallback">contribution graph temporarily unavailable — check back shortly</div>
       </div>
@@ -638,9 +638,9 @@
           clearInterval(iv);
           el.classList.remove('type-cursor');
           i++;
-          setTimeout(typeNext, 120);
+          setTimeout(typeNext, 70);
         }
-      }, 14);
+      }, 9);
     }
     typeNext();
   }
@@ -771,6 +771,12 @@
     }
   }
   loadGithubQuickStats();
+
+  /* ---- cache-bust the activity graph so it doesn't show a stale cached image ---- */
+  const activityImg = document.getElementById('activityGraphImg');
+  if(activityImg){
+    activityImg.src = activityImg.src + '&t=' + Date.now();
+  }
 </script>
 
 <!-- RESUME DOWNLOAD MODAL -->
